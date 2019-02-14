@@ -42,12 +42,16 @@ configure do
 		erb :new
 	end
 
+	#обработчик post-запроса /new
+	#(браузер отправляет данные на сервер)
 	post '/new' do
 		#получаем переменную из post-запроса
-		#(браузер отправляет данные на сервер)
-		@db.execute
-
 		content = params[:content]
+
+		if content.length <= 0
+			@error = 'Type text'
+			return erb :new
+		end
 
 		erb "You typed #{content}"
 	end
