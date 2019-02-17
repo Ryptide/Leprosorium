@@ -65,7 +65,7 @@ configure do
 	#вывод информации о посте
 	get '/details/:post_id' do
 
-		#получаем информацию из URL
+		#получаем переменную из URL
 		post_id = params[:post_id]
 		#получаем список постов
 		#(у нас бует только один пост)
@@ -76,4 +76,16 @@ configure do
 
 		#возвращаем представление details.erb
 		erb :details
+	end
+
+	#обработчик post запроса details/...
+	#(браузер отправляем данные на сервер, а мы их принимаем)
+	post '/details/:post_id' do
+		#получаем переменную из URL
+		post_id = params[:post_id]
+
+		#получаем переменную из post-запроса
+		content = params[:content]
+
+		erb "You typed comment #{content} for post #{post_id}"
 	end
