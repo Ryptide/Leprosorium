@@ -65,6 +65,7 @@ configure do
 				return erb :new
 			end
 
+			#сохранение данных в базу данных
 			@db.execute 'insert into Posts (content, created_date) values (?, datetime())', [content]
 
 			#перенаправление на главную страницу
@@ -96,5 +97,9 @@ configure do
 			#получаем переменную из post-запроса
 			content = params[:content]
 
-			erb "You typed comment #{content} for post #{post_id}"
+			#сохранение данных в базу данных
+			@db.execute 'insert into Comments
+			(content, created_date, post_id) values (?, datetime(), ?)', [content, post_id]
+			#перенаправление на главную страницу
+			redirect to('/details/' + post_id)
 		end
