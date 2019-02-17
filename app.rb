@@ -30,62 +30,71 @@ configure do
 		content TEXT
 		)'
 
-	end
+		#создаёт таблицу если таблица не существует
+		@db.execute 'CREATE TABLE IF NOT EXISTS Comments
+		(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			created_date DATE,
+			content TEXT,
+			post_id integer
+			)'
 
-	get '/' do
-		#выбираем список постов из БД
-
-		@results = @db.execute 'select * from Posts order by id desc'
-		erb :index
-	end
-
-	#обработчик get-запроса /new
-	#(браузер получает страницу с сервера)
-	get '/new' do
-		erb :new
-	end
-
-	#обработчик post-запроса /new
-	#(браузер отправляет данные на сервер)
-	post '/new' do
-		#получаем переменную из post-запроса
-		content = params[:content]
-
-		if content.length <= 0
-			@error = 'Type text'
-			return erb :new
 		end
 
-		@db.execute 'insert into Posts (content, created_date) values (?, datetime())', [content]
+		get '/' do
+			#выбираем список постов из БД
 
-		#перенаправление на главную страницу
-		redirect to '/'
-	end
+			@results = @db.execute 'select * from Posts order by id desc'
+			erb :index
+		end
 
-	#вывод информации о посте
-	get '/details/:post_id' do
+		#обработчик get-запроса /new
+		#(браузер получает страницу с сервера)
+		get '/new' do
+			erb :new
+		end
 
-		#получаем переменную из URL
-		post_id = params[:post_id]
-		#получаем список постов
-		#(у нас бует только один пост)
-		results = @db.execute 'select * from Posts where id = ?', [post_id]
+		#обработчик post-запроса /new
+		#(браузер отправляет данные на сервер)
+		post '/new' do
+			#получаем переменную из post-запроса
+			content = params[:content]
 
-		#выбираем этот один пост в переменную row
-		@row = results[0]
+			if content.length <= 0
+				@error = 'Type text'
+				return erb :new
+			end
 
-		#возвращаем представление details.erb
-		erb :details
-	end
+			@db.execute 'insert into Posts (content, created_date) values (?, datetime())', [content]
 
-	#обработчик post запроса details/...
-	#(браузер отправляем данные на сервер, а мы их принимаем)
-	post '/details/:post_id' do
-		#получаем переменную из URL
-		post_id = params[:post_id]
+			#перенаправление на главную страницу
+			redirect to '/'
+		end
 
-		#получаем переменную из post-запроса
-		content = params[:content]
+		#вывод информации о посте
+		get '/details/:post_id' do
 
-		erb "You typed comment #{content} for post #{post_id}"
-	end
+			#получаем переменную из URL
+			post_id = params[:post_id]
+			#получаем список постов
+			#(у нас бует только один пост)
+			results = @db.execute 'select * from Posts where id = ?', [post_id]
+
+			#выбираем этот один пост в переменную row
+			@row = results[0]
+
+			#возвращаем представление details.erb
+			erb :details
+		end
+
+		#обработчик post запроса details/...
+		#(браузер отправляем данные на сервер, а мы их принимаем)
+		post '/details/:post_id' do
+			#получаем переменную из URL
+			post_id = params[:post_id]
+
+			#получаем переменную из post-запроса
+			content = params[:content]
+
+			erb "You typed comment #{content} for post #{post_id}"
+		end
